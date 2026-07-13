@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from "./../hook/useAuth";
+import { useAuth } from "../../hook/useAuth";
 
 function Register() {
   const [name, setName] = useState('');
@@ -32,17 +32,10 @@ function Register() {
   return (
     <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
       <h2 className="mb-2 text-3xl font-bold">Ro'yxatdan o'tish</h2>
-      <p className="mb-8 text-gray-500">Bepul hisob yarating va o'qishni boshlang.</p>
+     
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <input
-          type="text"
-          placeholder="To'liq ism"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-        />
+      
 
         <input
           type="email"

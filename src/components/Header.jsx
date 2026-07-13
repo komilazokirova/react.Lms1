@@ -1,6 +1,11 @@
 import { Bell, Search } from "lucide-react";
+import { useAuth } from "../hook/useAuth";
 
 function Header() {
+  const { user } = useAuth();
+  console.log("USER:", user);
+  console.log("USER NAME:", user?.name);
+
   return (
     <header className="h-20 bg-white border-b flex items-center justify-between px-8">
       <div className="relative">
@@ -18,13 +23,13 @@ function Header() {
 
         <div className="flex items-center gap-3">
           <img
-            src="https://i.pravatar.cc/100"
+            src={user?.avatar || "https://i.pravatar.cc/100"}
             alt="user"
             className="w-10 h-10 rounded-full object-cover"
           />
           <div>
-            <p className="text-sm font-semibold">John</p>
-            <p className="text-xs text-gray-500">Student</p>
+            <p className="text-sm font-semibold">{user?.name || "Foydalanuvchi"}</p>
+            <p className="text-xs text-gray-500">{user?.role || "Student"}</p>
           </div>
         </div>
       </div>
