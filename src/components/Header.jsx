@@ -3,14 +3,11 @@ import { useAuth } from "../hook/useAuth";
 
 function Header() {
   const { user } = useAuth();
-  console.log("USER:", user);
-  console.log("USER NAME:", user?.name);
 
   return (
     <header className="h-20 bg-white border-b flex items-center justify-between px-8">
       <div className="relative">
         <Search size={20} className="absolute left-4 top-3 text-gray-400" />
-
         <input
           type="text"
           placeholder="Search courses..."
@@ -20,12 +17,12 @@ function Header() {
 
       <div className="flex items-center gap-6">
         <Bell className="cursor-pointer" />
-
         <div className="flex items-center gap-3">
           <img
             src={user?.avatar || "https://i.pravatar.cc/100"}
             alt="user"
             className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => { e.target.src = "https://i.pravatar.cc/100"; }}
           />
           <div>
             <p className="text-sm font-semibold">{user?.name || "Foydalanuvchi"}</p>
