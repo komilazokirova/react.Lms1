@@ -60,7 +60,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await axios(
-        "https://api.escuelajs.co/api/v1/users?limit=10"
+        "https://api.escuelajs.co/api/v1/users?"
       );
       setUsers(response.data);
     } catch (error) {

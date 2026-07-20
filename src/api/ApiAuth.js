@@ -1,48 +1,46 @@
-const BASE_URL = "https://api.escuelajs.co/api/v1";
+import { api } from "./api";
 
 export async function loginRequest(email, password) {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  const response = await api.post("/auth/login", { email, password });
 
-  if (!response.ok) {
+  if (!response.data) {
     throw new Error("Something went wrong!");
   }
 
-  return response.json();
+  // access va refresh tokenlarni saqlab qo'yamiz
+  localStorage.setItem("token", response.data.access_token);
+  localStorage.setItem("refreshToken", response.data.refresh_token);
+
+  return response.data;
 }
 
 export async function registerRequest(email, name, password, role, avatar) {
-  const response = await fetch(`${BASE_URL}/users`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email,
-      name,
-      password,
-      role,
-      avatar,
-    }),
+  const response = await api.post("/users", {
+    email,
+    name,
+    password,
+    role,
+    avatar,
   });
 
-  if (!response.ok) {
+  if (!response.data) {
     throw new Error("Something went wrong!");
   }
 
-  return response.json();
+  return response.data;
 }
 
-export async function getProfile(token) {
-  const response = await fetch(`${BASE_URL}/auth/profile`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export async function getProfile() {
+  const response = await api.get("/auth/profile");
 
-  if (!response.ok) {
+  if (!response.data) {
     throw new Error("Something went wrong!");
   }
 
-  return response.json();
+  return response.data;
+}
+
+export function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
 }
