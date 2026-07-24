@@ -19,12 +19,12 @@ const DashboardLayout = () => {
       <div className="flex flex-1 flex-col border">
         <Header />
         <main className="flex-1 p-8">
-          <button
+          {/* <button
             onClick={handleLogout}
             className="mb-6 bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600"
           >
             Logout
-          </button>
+          </button> */}
           <Outlet />
         </main>
       </div>

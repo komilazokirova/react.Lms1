@@ -1,0 +1,77 @@
+import {
+  UserPlus,
+  BookOpen,
+  FileText,
+  CheckCircle,
+  MessageSquare,
+  Award,
+  CreditCard,
+  CalendarCheck,
+  Bell,
+} from "lucide-react";
+
+export const activities = [
+  {
+    id: 1,
+    title: "Ali submitted Homework",
+    time: "2 min ago",
+    icon: FileText,
+    color: "bg-blue-100 text-blue-600",
+  },
+  {
+    id: 2,
+    title: "Aziza joined React Group",
+    time: "15 min ago",
+    icon: UserPlus,
+    color: "bg-green-100 text-green-600",
+  },
+  {
+    id: 3,
+    title: "React Module 3 Published",
+    time: "30 min ago",
+    icon: BookOpen,
+    color: "bg-purple-100 text-purple-600",
+  },
+  {
+    id: 4,
+    title: "Jasur completed JavaScript Quiz",
+    time: "1 hour ago",
+    icon: CheckCircle,
+    color: "bg-emerald-100 text-emerald-600",
+  },
+  {
+    id: 5,
+    title: "New comment on CSS Lesson",
+    time: "2 hours ago",
+    icon: MessageSquare,
+    color: "bg-sky-100 text-sky-600",
+  },
+  {
+    id: 6,
+    title: "Malika earned React Certificate",
+    time: "3 hours ago",
+    icon: Award,
+    color: "bg-yellow-100 text-yellow-600",
+  },
+  {
+    id: 7,
+    title: "Dilnoza paid for Course",
+    time: "4 hours ago",
+    icon: CreditCard,
+    color: "bg-pink-100 text-pink-600",
+  },
+  {
+    id: 8,
+    title: "Attendance marked for Group A",
+    time: "5 hours ago",
+    icon: CalendarCheck,
+    color: "bg-indigo-100 text-indigo-600",
+  },
+  {
+    id: 9,
+    title: "New announcement posted",
+    time: "6 hours ago",
+    icon: Bell,
+    color: "bg-orange-100 text-orange-600",
+  },
+];

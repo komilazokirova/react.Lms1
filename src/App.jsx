@@ -11,7 +11,8 @@ import MyLearning from './pages/dashboard/MyLearning'
 import Settings from './pages/dashboard/Settings'
 import Profile from './pages/dashboard/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
-import Users from './pages/dashboard/Users'
+
+import UsersPage from './pages/dashboard/UsersPage'
 
 
 const App = () => {
@@ -37,7 +38,7 @@ const App = () => {
           <Route path="my-learning" element={<MyLearning />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
-          <Route path ="users" element={<Users/>}/>
+          <Route path ="users" element={<UsersPage/>}/>
         </Route>
         <Route path ="*" element={<p>Not Found 404</p>}/>
       </Routes>

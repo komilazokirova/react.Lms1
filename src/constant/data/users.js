@@ -1,0 +1,38 @@
+export const users = [
+  {
+    id: 1,
+    name: "Ali Karimov",
+    email: "ali@mail.com",
+    role: "Student",
+    status: "Active",
+    joined: "2025-01-12",
+    avatar: "https://i.pravatar.cc/100?img=1",
+  },
+  {
+    id: 2,
+    name: "Aziza Yusupova",
+    email: "aziza@mail.com",
+    role: "Mentor",
+    status: "Active",
+    joined: "2024-11-03",
+    avatar: "https://i.pravatar.cc/100?img=2",
+  },
+  {
+    id: 3,
+    name: "Jasur Toshev",
+    email: "jasur@mail.com",
+    role: "Student",
+    status: "Inactive",
+    joined: "2025-03-20",
+    avatar: "https://i.pravatar.cc/100?img=3",
+  },
+  {
+    id: 4,
+    name: "Malika Nazarova",
+    email: "malika@mail.com",
+    role: "Administrator",
+    status: "Active",
+    joined: "2024-08-15",
+    avatar: "https://i.pravatar.cc/100?img=4",
+  },
+];
