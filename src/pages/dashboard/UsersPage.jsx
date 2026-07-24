@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
-import { users } from "../../constant/data/users";
+import { users as initialUsers } from "../../constant/data/users";
 import UserHeader from "../../components/dashboard/users/UserHeader";
 import UserFilters from "../../components/dashboard/users/UserFilters";
 import UserTable from "../../components/dashboard/users/UserTable";
 
 const UsersPage = () => {
+  const [users, setUsers] = useState(initialUsers); // 👈 endi state
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("All");
   const [status, setStatus] = useState("All");
@@ -29,7 +30,7 @@ const UsersPage = () => {
 
   return (
     <>
-      <UserHeader/>
+      <UserHeader users={users} setUsers={setUsers} /> {/* 👈 prop uzatildi */}
       <UserFilters
         search={search}
         setSearch={setSearch}
