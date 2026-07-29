@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Modal from "./Modal"; // to'g'ri path qo'ying
+import Modal from "./Modal"; 
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -80,7 +80,7 @@ const Users = () => {
         </button>
       </div>
 
-      {/* Modal */}
+     
       <Modal
         IsOpen={showForm}
         onClose={() => setShowForm(false)}

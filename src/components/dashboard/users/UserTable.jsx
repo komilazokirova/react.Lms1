@@ -1,6 +1,6 @@
 import UserRow from "./UserRow";
 
-function UserTable({ users }) {
+function UserTable({ users, setUsers }) {
   if (users.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-12">
@@ -27,7 +27,7 @@ function UserTable({ users }) {
 
         <tbody>
           {users.map((user) => (
-            <UserRow key={user.id} user={user} />
+            <UserRow key={user.id} user={user} setUsers={setUsers} />
           ))}
         </tbody>
       </table>

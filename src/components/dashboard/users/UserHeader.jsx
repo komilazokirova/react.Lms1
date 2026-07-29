@@ -9,43 +9,40 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import Modal from "../../Modal";
-import axios from "axios";
 
-function UserHeader() {
+function UserHeader({ users, setUsers }) {
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState([]);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [status, setStatus] = useState("Active");
   const [avatar, setAvatar] = useState("");
-  const [isActive, setIsActive] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "https://api.escuelajs.co/api/v1/users",
-        {
-          email,
-          name,
-          password,
-          role,
-          avatar,
-        }
-      );
 
-      setUsers((prev) => [...prev, response.data]);
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      role,
+      status,
+      joined: new Date().toISOString().split("T")[0],
+      avatar:
+        avatar ||
+        `https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 70)}`,
+    };
 
-      setEmail("");
-      setName("");
-      setPassword("");
-      setRole("");
-      setAvatar("");
-      setOpen(false);
-    } catch (error) {
-      console.log(error.message);
-    }
+    setUsers((prev) => [...prev, newUser]);
+
+    setEmail("");
+    setName("");
+    setPassword("");
+    setRole("");
+    setStatus("Active");
+    setAvatar("");
+    setOpen(false);
   };
 
   return (
@@ -141,12 +138,29 @@ function UserHeader() {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
+                required
                 className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               >
                 <option value="">Select role</option>
-                <option value="admin">Admin</option>
-                <option value="teacher">Teacher</option>
-                <option value="student">Student</option>
+                <option value="Administrator">Administrator</option>
+                <option value="Mentor">Mentor</option>
+                <option value="Student">Student</option>
+                <option value="Support Teacher">Support Teacher</option>
+              </select>
+            </div>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-sm font-semibold text-slate-700">Status</span>
+            <div className="relative">
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-blue-500"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Blocked">Blocked</option>
               </select>
             </div>
           </label>
