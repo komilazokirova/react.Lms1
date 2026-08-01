@@ -8,40 +8,34 @@ import {
   UserPlus,
 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Modal from "../../Modal";
 
 function UserHeader({ users, setUsers }) {
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState("Active");
-  const [avatar, setAvatar] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur", // inputdan chiqib ketganda tekshiradi
+  });
 
+  const onSubmit = (data) => {
     const newUser = {
       id: Date.now(),
-      name,
-      email,
-      role,
-      status,
-      joined: new Date().toISOString().split("T")[0],
-      avatar:
-        avatar ||
-        `https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 70)}`,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      avatar: data.avatar,
+      status: "Active",
     };
 
     setUsers((prev) => [...prev, newUser]);
 
-    setEmail("");
-    setName("");
-    setPassword("");
-    setRole("");
-    setStatus("Active");
-    setAvatar("");
+    reset();
     setOpen(false);
   };
 
@@ -67,7 +61,11 @@ function UserHeader({ users, setUsers }) {
       </div>
 
       <Modal IsOpen={open} onClose={() => setOpen(false)} title="Create User">
-        <form onSubmit={handleSubmit} className="grid gap-5 p-6 md:grid-cols-2">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid gap-5 p-6 md:grid-cols-2"
+        >
+          {/* Full name */}
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Full name
@@ -80,14 +78,22 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="text"
                 placeholder="Ism-familiya"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+                {...register("name", {
+                  required: "Ism kiritilishi shart",
+                  minLength: {
+                    value: 3,
+                    message: "Ism kamida 3 ta harfdan iborat bo'lishi kerak",
+                  },
+                })}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
+            )}
           </label>
 
+          {/* Email */}
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Email
@@ -98,16 +104,24 @@ function UserHeader({ users, setUsers }) {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <input
-                type="email"
+                type="text"
                 placeholder="jasur@mail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                {...register("email", {
+                  required: "Email kiritilishi shart",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Email noto'g'ri, @ belgisi va domen bo'lishi kerak",
+                  },
+                })}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </label>
 
+          {/* Password */}
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Password
@@ -120,14 +134,22 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="password"
                 placeholder="Parol"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                {...register("password", {
+                  required: "Parol kiritilishi shart",
+                  minLength: {
+                    value: 6,
+                    message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+                  },
+                })}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
           </label>
 
+          {/* Role */}
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">Role</span>
             <div className="relative">
@@ -136,35 +158,24 @@ function UserHeader({ users, setUsers }) {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
+                {...register("role", {
+                  required: "Rol tanlanishi shart",
+                })}
+                defaultValue=""
                 className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               >
                 <option value="">Select role</option>
-                <option value="Administrator">Administrator</option>
-                <option value="Mentor">Mentor</option>
-                <option value="Student">Student</option>
-                <option value="Support Teacher">Support Teacher</option>
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
               </select>
             </div>
+            {errors.role && (
+              <p className="text-sm text-red-500">{errors.role.message}</p>
+            )}
           </label>
 
-          <label className="space-y-2">
-            <span className="text-sm font-semibold text-slate-700">Status</span>
-            <div className="relative">
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-blue-500"
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Blocked">Blocked</option>
-              </select>
-            </div>
-          </label>
-
+          {/* Avatar URL */}
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-slate-700">
               Avatar URL
@@ -175,13 +186,20 @@ function UserHeader({ users, setUsers }) {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <input
-                type="url"
+                type="text"
                 placeholder="https://example.com/avatar.jpg"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
+                {...register("avatar", {
+                  pattern: {
+                    value: /^(https?:\/\/).+/,
+                    message: "URL http:// yoki https:// bilan boshlanishi kerak",
+                  },
+                })}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
+            {errors.avatar && (
+              <p className="text-sm text-red-500">{errors.avatar.message}</p>
+            )}
           </label>
 
           <div className="flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-end md:col-span-2">

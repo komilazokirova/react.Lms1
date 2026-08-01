@@ -1,24 +1,27 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useAuth } from "../../hook/useAuth";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: 'onBlur' });
+
+  async function onSubmit(data) {
     setError('');
     setSubmitting(true);
 
     try {
-      await login(email, password);
+      await login(data.email, data.password);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -32,24 +35,42 @@ function Login() {
       <h2 className="mb-2 text-3xl font-bold">Kirish</h2>
       <p className="mb-8 text-gray-500">Davom etish uchun tizimga kiring.</p>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div>
+          <input
+            type="text"
+            placeholder="Email"
+            {...register('email', {
+              required: 'Email kiritilishi shart',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Emailda @ bo'lishi shart",
+              },
+            })}
+            className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
 
-        <input
-          type="password"
-          placeholder="Parol"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-        />
+        <div>
+          <input
+            type="password"
+            placeholder="Parol"
+            {...register('password', {
+              required: 'Parol kiritilishi shart',
+              minLength: {
+                value: 4,
+                message: "Parol kamida 4 ta belgidan iborat bo'lishi kerak",
+              },
+            })}
+            className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+          )}
+        </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
