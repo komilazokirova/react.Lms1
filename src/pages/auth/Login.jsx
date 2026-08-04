@@ -1,7 +1,20 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuth } from "../../hook/useAuth";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email kiritilishi shart')
+    .email("Emailda @ bo'lishi shart"),
+  password: z
+    .string()
+    .min(1, 'Parol kiritilishi shart')
+    .min(4, "Parol kamida 4 ta belgidan iborat bo'lishi kerak"),
+});
 
 function Login() {
   const [error, setError] = useState('');
@@ -14,7 +27,10 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
+  });
 
   async function onSubmit(data) {
     setError('');
@@ -40,13 +56,7 @@ function Login() {
           <input
             type="text"
             placeholder="Email"
-            {...register('email', {
-              required: 'Email kiritilishi shart',
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Emailda @ bo'lishi shart",
-              },
-            })}
+            {...register('email')}
             className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
           {errors.email && (
@@ -55,16 +65,12 @@ function Login() {
         </div>
 
         <div>
+
+
           <input
             type="password"
             placeholder="Parol"
-            {...register('password', {
-              required: 'Parol kiritilishi shart',
-              minLength: {
-                value: 4,
-                message: "Parol kamida 4 ta belgidan iborat bo'lishi kerak",
-              },
-            })}
+            {...register('password')}
             className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
           {errors.password && (

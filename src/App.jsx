@@ -13,6 +13,7 @@ import Profile from './pages/dashboard/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import UsersPage from './pages/dashboard/UsersPage'
+import Product from './Product'
 
 
 const App = () => {
@@ -39,6 +40,8 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path ="users" element={<UsersPage/>}/>
+          <Route path ="product" element={<Product/>}/>
+
         </Route>
         <Route path ="*" element={<p>Not Found 404</p>}/>
       </Routes>

@@ -10,6 +10,28 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "../../Modal";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const loginSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Ism kiritilishi shart"),
+  email: z
+    .string()
+    .min(1, "Email kiritilishi shart")
+    .email("Emailda @ bo'lishi shart"),
+  password: z
+    .string()
+    .min(1, "Parol kiritilishi shart")
+    .min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
+  role: z
+    .string()
+    .min(1, "Rol tanlanishi shart"),
+  avatar: z
+    .string()
+    .min(1, "URL http:// yoki https:// bilan boshlanishi kerak"),
+});
 
 function UserHeader({ users, setUsers }) {
   const [open, setOpen] = useState(false);
@@ -20,24 +42,23 @@ function UserHeader({ users, setUsers }) {
     reset,
     formState: { errors },
   } = useForm({
-    mode: "onBlur", // inputdan chiqib ketganda tekshiradi
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur",
   });
 
-  const onSubmit = (data) => {
+  function onSubmit(data) {
     const newUser = {
       id: Date.now(),
       name: data.name,
       email: data.email,
+      password: data.password,
       role: data.role,
       avatar: data.avatar,
-      status: "Active",
     };
-
-    setUsers((prev) => [...prev, newUser]);
-
-    reset();
+    setUsers([...users, newUser]);
     setOpen(false);
-  };
+    reset();
+  }
 
   return (
     <>
@@ -78,13 +99,7 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="text"
                 placeholder="Ism-familiya"
-                {...register("name", {
-                  required: "Ism kiritilishi shart",
-                  minLength: {
-                    value: 3,
-                    message: "Ism kamida 3 ta harfdan iborat bo'lishi kerak",
-                  },
-                })}
+                {...register("name")}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
@@ -106,13 +121,7 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="text"
                 placeholder="jasur@mail.com"
-                {...register("email", {
-                  required: "Email kiritilishi shart",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Email noto'g'ri, @ belgisi va domen bo'lishi kerak",
-                  },
-                })}
+                {...register("email")}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
@@ -134,13 +143,7 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="password"
                 placeholder="Parol"
-                {...register("password", {
-                  required: "Parol kiritilishi shart",
-                  minLength: {
-                    value: 6,
-                    message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
-                  },
-                })}
+                {...register("password")}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
@@ -158,9 +161,7 @@ function UserHeader({ users, setUsers }) {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <select
-                {...register("role", {
-                  required: "Rol tanlanishi shart",
-                })}
+                {...register("role")}
                 defaultValue=""
                 className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               >
@@ -188,12 +189,7 @@ function UserHeader({ users, setUsers }) {
               <input
                 type="text"
                 placeholder="https://example.com/avatar.jpg"
-                {...register("avatar", {
-                  pattern: {
-                    value: /^(https?:\/\/).+/,
-                    message: "URL http:// yoki https:// bilan boshlanishi kerak",
-                  },
-                })}
+                {...register("avatar")}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
