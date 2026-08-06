@@ -2,7 +2,6 @@ import axios from "axios";
 
 export const api = axios.create({
     baseURL: "https://api.escuelajs.co/api/v1",
-    timeout: 5000,
 });
 
 // ---- Request interceptor: har bir so'rovga access tokenni qo'shadi ----

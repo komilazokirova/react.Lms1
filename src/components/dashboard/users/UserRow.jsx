@@ -31,6 +31,7 @@ function UserRow({ user, setUsers }) {
     Inactive: "bg-gray-100 text-gray-600",
     Blocked: "bg-red-100 text-red-700",
   };
+  
 
   function handleDelete() {
     setUsers((prev) => prev.filter((u) => u.id !== user.id));
