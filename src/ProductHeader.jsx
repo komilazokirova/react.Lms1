@@ -2,13 +2,10 @@ import { Plus, Tag, DollarSign, FileText, Image, List } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-
-import axios from "axios";
-
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Modal from "./components/Modal";
-
+import { useCreateProduct } from "./hook/useProductMutations";
 
 const productSchema = z.object({
   title: z
@@ -38,39 +35,39 @@ const productSchema = z.object({
     .regex(/^(https?:\/\/).+/, "URL http:// yoki https:// bilan boshlanishi kerak"),
 });
 
-function ProductHeader({ products, setProducts }) {
+function ProductHeader() {
   const [open, setOpen] = useState(false);
+  const createProduct = useCreateProduct();
 
   const {
-    register,//inputlarni forma bilan bog'laydi.
-    handleSubmit,//yuborishda validatsiya qiladi va onSubmitni chaqiradi.
-    reset,//formani tozalaydi.
-    formState: { errors },//validatsiya xatolarini saqlaydi.
+    register, //inputlarni forma bilan bog'laydi.
+    handleSubmit, //yuborishda validatsiya qiladi va onSubmitni chaqiradi.
+    reset, //formani tozalaydi.
+    formState: { errors }, //validatsiya xatolarini saqlaydi.
   } = useForm({
     resolver: zodResolver(productSchema), //Zod orqali ma'lumotlarni tekshiradi.
     mode: "onBlur",
   });
 
-  const onSubmit = async (data) => {
-    try {
-      const response = await axios.post(
-        "https://api.escuelajs.co/api/v1/products",
-        {
-          title: data.title,
-          price: Number(data.price),
-          description: data.description,
-          categoryId: Number(data.categoryId),
-          images: [data.image],
-        }
-      );
-
-      setProducts((prev) => [...prev, response.data]);
-
-      reset();
-      setOpen(false);
-    } catch (error) {
-      console.log(error.message);
-    }
+  const onSubmit = (data) => {
+    createProduct.mutate(
+      {
+        title: data.title,
+        price: Number(data.price),
+        description: data.description,
+        categoryId: Number(data.categoryId),
+        images: [data.image],
+      },
+      {
+        onSuccess: () => {
+          reset();
+          setOpen(false);
+        },
+        onError: (error) => {
+          console.log(error.message);
+        },
+      }
+    );
   };
 
   return (
@@ -97,7 +94,6 @@ function ProductHeader({ products, setProducts }) {
           onSubmit={handleSubmit(onSubmit)}
           className="grid gap-5 p-6 md:grid-cols-2"
         >
-       
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-slate-700">
               Mahsulot nomi
@@ -119,7 +115,6 @@ function ProductHeader({ products, setProducts }) {
             )}
           </label>
 
-        
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Narx ($)
@@ -141,7 +136,6 @@ function ProductHeader({ products, setProducts }) {
             )}
           </label>
 
-         
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Kategoriya ID
@@ -165,7 +159,6 @@ function ProductHeader({ products, setProducts }) {
             )}
           </label>
 
-         
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-slate-700">
               Tavsif
@@ -189,7 +182,6 @@ function ProductHeader({ products, setProducts }) {
             )}
           </label>
 
-       
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-slate-700">
               Rasm URL
@@ -214,12 +206,19 @@ function ProductHeader({ products, setProducts }) {
           <div className="flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-end md:col-span-2">
             <button
               type="submit"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700"
+              disabled={createProduct.isPending}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700 disabled:opacity-50"
             >
               <Plus size={19} />
-              Mahsulot qo'shish
+              {createProduct.isPending ? "Qo'shilmoqda..." : "Mahsulot qo'shish"}
             </button>
           </div>
+
+          {createProduct.isError && (
+            <p className="text-sm text-red-500 md:col-span-2">
+              Xato: {createProduct.error.message}
+            </p>
+          )}
         </form>
       </Modal>
     </>

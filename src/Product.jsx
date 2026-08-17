@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { getProducts } from "./constant/data/product";
-import ProductHeader from "./ProductHeader"; 
+import { useProducts } from './hook/useProducts';
+import ProductHeader from "./ProductHeader";
 
 const Product = () => {
-  const [products, setProducts] = useState([]);
+  const { data: products = [], isLoading, isError, error } = useProducts();
 
-  useEffect(() => {
-    getProducts()
-      .then((data) => setProducts(data))
-      .catch((err) => console.log(err));
-  }, []);
+  if (isLoading) return <p className="text-center mt-10">Yuklanmoqda...</p>;
+  if (isError) return <p className="text-center mt-10 text-red-500">Xato: {error.message}</p>;
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <ProductHeader products={products} setProducts={setProducts} />
+      <ProductHeader />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
         {products.map((item) => (
@@ -26,21 +22,11 @@ const Product = () => {
               alt={item.title}
               className="w-full h-52 object-cover"
             />
-
             <div className="p-4">
-              <h2 className="text-lg font-semibold line-clamp-2">
-                {item.title}
-              </h2>
-
-              <p className="text-gray-500 text-sm mt-2 line-clamp-3">
-                {item.description}
-              </p>
-
+              <h2 className="text-lg font-semibold line-clamp-2">{item.title}</h2>
+              <p className="text-gray-500 text-sm mt-2 line-clamp-3">{item.description}</p>
               <div className="flex justify-between items-center mt-4">
-                <span className="text-xl font-bold text-green-600">
-                  ${item.price}
-                </span>
-
+                <span className="text-xl font-bold text-green-600">${item.price}</span>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                   Buy
                 </button>
