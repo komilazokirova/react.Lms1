@@ -12,11 +12,12 @@ import { useForm } from "react-hook-form";
 import Modal from "../../Modal";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../../../api/api";
 
-const loginSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Ism kiritilishi shart"),
+
+const userSchema = z.object({
+  name: z.string().min(1, "Ism kiritilishi shart"),
   email: z
     .string()
     .min(1, "Email kiritilishi shart")
@@ -25,16 +26,15 @@ const loginSchema = z.object({
     .string()
     .min(1, "Parol kiritilishi shart")
     .min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
-  role: z
-    .string()
-    .min(1, "Rol tanlanishi shart"),
+  role: z.string().min(1, "Rol tanlanishi shart"),
   avatar: z
     .string()
     .min(1, "URL http:// yoki https:// bilan boshlanishi kerak"),
 });
 
-function UserHeader({ users, setUsers }) {
+function UserHeader() {
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -42,22 +42,30 @@ function UserHeader({ users, setUsers }) {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(userSchema),
     mode: "onBlur",
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: (newUser) => api.post("/users", newUser), // 👈 api instance, oddiy axios emas
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      reset();
+      setOpen(false);
+    },
+    onError: (error) => {
+      console.log(error.response?.data || error.message);
+    },
+  });
+
   function onSubmit(data) {
-    const newUser = {
-      id: Date.now(),
+    mutate({
       name: data.name,
       email: data.email,
       password: data.password,
       role: data.role,
       avatar: data.avatar,
-    };
-    setUsers([...users, newUser]);
-    setOpen(false);
-    reset();
+    });
   }
 
   return (
@@ -201,10 +209,11 @@ function UserHeader({ users, setUsers }) {
           <div className="flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-end md:col-span-2">
             <button
               type="submit"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700"
+              disabled={isPending}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700 disabled:opacity-50"
             >
               <UserPlus size={19} />
-              Create User
+              {isPending ? "Yaratilmoqda..." : "Create User"}
             </button>
           </div>
         </form>

@@ -8,9 +8,11 @@ import {
   Image,
   Save,
 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../../../api/api"; // 👈 sizning tayyor instance, path'ni moslang
 import Modal from "../../Modal";
 
-function UserRow({ user, setUsers }) {
+function UserRow({ user }) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [name, setName] = useState(user.name);
@@ -18,6 +20,8 @@ function UserRow({ user, setUsers }) {
   const [role, setRole] = useState(user.role);
   const [status, setStatus] = useState(user.status);
   const [avatar, setAvatar] = useState(user.avatar);
+
+  const queryClient = useQueryClient();
 
   const roleStyles = {
     Administrator: "bg-blue-100 text-blue-700",
@@ -31,23 +35,36 @@ function UserRow({ user, setUsers }) {
     Inactive: "bg-gray-100 text-gray-600",
     Blocked: "bg-red-100 text-red-700",
   };
-  
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.delete(`/users/${user.id}`), // 👈 baseURL allaqachon api.js'da bor
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDeleteOpen(false);
+    },
+    onError: (error) => {
+      console.log(error.response?.data || error.message);
+    },
+  });
+
+  const editMutation = useMutation({
+    mutationFn: (updatedUser) => api.put(`/users/${user.id}`, updatedUser),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setEditOpen(false);
+    },
+    onError: (error) => {
+      console.log(error.response?.data || error.message);
+    },
+  });
 
   function handleDelete() {
-    setUsers((prev) => prev.filter((u) => u.id !== user.id));
-    setDeleteOpen(false);
+    deleteMutation.mutate();
   }
 
   function handleEditSubmit(e) {
     e.preventDefault();
-
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === user.id ? { ...u, name, email, role, status, avatar } : u
-      )
-    );
-
-    setEditOpen(false);
+    editMutation.mutate({ name, email, role, status, avatar });
   }
 
   return (
@@ -64,12 +81,10 @@ function UserRow({ user, setUsers }) {
                   e.target.src = "https://i.pravatar.cc/100";
                 }}
               />
-
               {user.status === "Active" && (
                 <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
               )}
             </div>
-
             <div className="min-w-0">
               <h3 className="truncate font-semibold text-slate-800">
                 {user.name}
@@ -124,14 +139,15 @@ function UserRow({ user, setUsers }) {
         </td>
       </tr>
 
-
-
       <Modal
         IsOpen={editOpen}
         onClose={() => setEditOpen(false)}
         title="Edit User"
       >
-        <form onSubmit={handleEditSubmit} className="grid gap-5 p-6 md:grid-cols-2">
+        <form
+          onSubmit={handleEditSubmit}
+          className="grid gap-5 p-6 md:grid-cols-2"
+        >
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-700">
               Full name
@@ -228,41 +244,43 @@ function UserRow({ user, setUsers }) {
           <div className="flex justify-end border-t border-slate-100 pt-5 md:col-span-2">
             <button
               type="submit"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700"
+              disabled={editMutation.isPending}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-colors duration-150 hover:bg-blue-700 disabled:opacity-50"
             >
               <Save size={19} />
-              Save changes
+              {editMutation.isPending ? "Saqlanmoqda..." : "Save changes"}
             </button>
           </div>
         </form>
       </Modal>
 
- <Modal
-  IsOpen={deleteOpen}
-  onClose={() => setDeleteOpen(false)}
-  title="Delete User"
->
-  <div className="p-6">
-    <p className="font-semibold text-slate-800">
-      {user.name}ni o'chirishga aminmisiz?
-    </p>
+      <Modal
+        IsOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Delete User"
+      >
+        <div className="p-6">
+          <p className="font-semibold text-slate-800">
+            {user.name}ni o'chirishga aminmisiz?
+          </p>
 
-    <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-5">
-      <button
-        onClick={() => setDeleteOpen(false)}
-        className="rounded-xl border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition hover:bg-slate-50"
-      >
-        Bekor qilish
-      </button>
-      <button
-        onClick={handleDelete}
-        className="rounded-xl bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-700"
-      >
-        Ha, o'chirish
-      </button>
-    </div>
-  </div>
-</Modal>
+          <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-5">
+            <button
+              onClick={() => setDeleteOpen(false)}
+              className="rounded-xl border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition hover:bg-slate-50"
+            >
+              Bekor qilish
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+              className="rounded-xl bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+            >
+              {deleteMutation.isPending ? "O'chirilmoqda..." : "Ha, o'chirish"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

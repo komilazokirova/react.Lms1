@@ -1,14 +1,26 @@
-import React, { useState } from "react";
-import { users as initialUsers } from "../../constant/data/users";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import UserHeader from "../../components/dashboard/users/UserHeader";
 import UserFilters from "../../components/dashboard/users/UserFilters";
 import UserTable from "../../components/dashboard/users/UserTable";
 
 const UsersPage = () => {
-  const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("All");
   const [status, setStatus] = useState("All");
+
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: () =>
+      axios
+        .get("https://api.escuelajs.co/api/v1/users")
+        .then((res) => res.data),
+  });
 
   function handleReset() {
     setRole("All");
@@ -27,9 +39,12 @@ const UsersPage = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
+  if (isLoading) return <p>Yuklanmoqda...</p>;
+  if (error) return <p>Xato: {error.message}</p>;
+
   return (
     <>
-      <UserHeader users={users} setUsers={setUsers} />
+      <UserHeader />
       <UserFilters
         search={search}
         setSearch={setSearch}
@@ -40,7 +55,7 @@ const UsersPage = () => {
         onReset={handleReset}
       />
 
-      <UserTable users={filteredUsers} setUsers={setUsers} />
+      <UserTable users={filteredUsers} />
     </>
   );
 };

@@ -14,11 +14,14 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 import UsersPage from './pages/dashboard/UsersPage'
 import Product from './Product'
+import { ToastProvider } from "./context/ToastContext";
 
 
 const App = () => {
   return (
+    
     <div>
+       <ToastProvider>
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
@@ -45,6 +48,7 @@ const App = () => {
         </Route>
         <Route path ="*" element={<p>Not Found 404</p>}/>
       </Routes>
+      </ToastProvider>
     </div>
   )
 }

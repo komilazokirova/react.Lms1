@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '../constant/data/product'; // o'zingdagi yo'lga moslashtir
+import { getProducts } from '../constant/data/product'; 
 
 export const useProducts = () => {
   return useQuery({
